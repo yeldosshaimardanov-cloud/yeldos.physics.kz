@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <title>Қозғалыс күштері – 9-сынып компьютерлік бақылау жұмысы</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        /* Мәтінді белгілеуді өшіру (жалпы бет үшін) */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        /* Оқушы енгізетін өрістерде белгілеуге рұқсат */
+        input[type="text"],
+        textarea,
+        select {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+        .panel {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-top: 8px;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+            box-sizing: border-box;
+        }
+        .button-row {
+            margin-top: 15px;
+            text-align: center;
+        }
+        button {
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .timer {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .info-line {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .question-text {
+            margin-bottom: 10px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        table, th, td {
+            border: 1px solid #999;
+        }
+        th, td {
+            padding: 6px;
+            text-align: left;
+        }
+        .note {
+            font-size: 12px;
+            color: #555;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .result-question {
+            border-top: 1px dashed #aaa;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body class="no-select">
+
+<h1>«Қозғалыс күштері» бөлімі бойынша компьютерлік бақылау жұмысы</h1>
+
+<!-- НҰСҚАУЛЫҚ + АКАДЕМИЯЛЫҚ АДАЛДЫҚ + ОҚУШЫ МӘЛІМЕТІ -->
+<div id="start-screen" class="panel">
+    <h2>Нұсқаулық, академиялық адалдық және ережелер</h2>
+
+    <p><strong>Академиялық адалдық дегеніміз не?</strong></p>
+    <ul>
+        <li>Тест – әр оқушының <strong>өз білімін</strong> көрсетуіне арналған.</li>
+        <li>Басқаның идеясын, жауабын, есебін <strong>өзінікі ретінде ұсыну</strong> – академиялық адалдықты бұзу.</li>
+        <li>Көшірме, шпаргалка, интернеттегі дайын шешімдерді қолдану, бір-бірінен көшіру – <strong>рұқсат етілмейді</strong>.</li>
+        <li>Академиялық адалдықты бұзу жағдайында тест нәтижелері <strong>жойылуы</strong> немесе қайта тапсыру талап етілуі мүмкін.</li>
+        <li>Шынайы білім – адал еңбекпен келеді. Тестті адал орындау – өзіңізге деген құрмет.</li>
+    </ul>
+
+    <p><strong>Компьютерлік тестілеу аудиториясының ережелері:</strong></p>
+    <ul>
+        <li>Тест барысында басқа оқушылармен сөйлесуге <strong>тыйым салынады</strong>.</li>
+        <li>Ұялы телефон, қосымша парақ, шпаргалка, басқа сайттарды қолдануға <strong>болмайды</strong>.</li>
+        <li>Браузер беттерін жабу, артқа қайту, бетті жаңарту ұсынылмайды – нәтижеңіз жоғалуы мүмкін.</li>
+        <li>Әр сұрақ жеке экранда көрсетіледі, <strong>кері қайту батырмасы жоқ</strong>.</li>
+        <li>Тесті анық, өз біліміңізге сүйене отырып орындаңыз.</li>
+    </ul>
+
+    <p class="note">
+        Уақыт шектеуі кодтың ішінде <strong>TEST_DURATION_MINUTES</strong> айнымалысы арқылы реттеледі (қазір – 40 минут).
+    </p>
+
+    <h3>Оқушы туралы мәлімет</h3>
+    <label for="student-name">Аты-жөні:</label>
+    <input type="text" id="student-name" placeholder="Мысалы: Елдос Дулатұлы">
+
+    <label for="student-grade">Сыныбы:</label>
+    <input type="text" id="student-grade" placeholder="Мысалы: 9">
+
+    <label for="student-letter">Литері:</label>
+    <input type="text" id="student-letter" placeholder="Мысалы: А">
+
+    <label style="margin-top:12px;">
+        <input type="checkbox" id="consent-checkbox">
+        Нұсқаулықпен және академиялық адалдық ережелерімен таныстым, <strong>келісемін</strong>.
+    </label>
+
+    <div class="button-row">
+        <button id="start-btn" onclick="startTest()" disabled>Бастау</button>
+    </div>
+</div>
+
+<!-- ТЕСТ ЭКРАНЫ -->
+<div id="quiz-screen" class="panel hidden">
+    <div class="info-line" id="student-info"></div>
+    <div class="timer">Қалған уақыт: <span id="time-remaining">00:00</span></div>
+
+    <h2 id="question-title" style="text-align:left;">Сұрақ</h2>
+    <p id="question-counter" class="note"></p>
+
+    <div id="question-container"></div>
+
+    <div class="button-row">
+        <button id="next-btn" onclick="nextQuestion()">Келесі сұрақ</button>
+        <button id="finish-btn" class="hidden" onclick="finishTest(false)">Аяқтау</button>
+    </div>
+</div>
+
+<!-- НӘТИЖЕ ЭКРАНЫ -->
+<div id="result-screen" class="panel hidden">
+    <h2>Нәтижелер</h2>
+    <p id="result-summary"></p>
+
+    <div class="section-title">Жеке сұрақтар бойынша нәтижелер:</div>
+    <div id="result-details"></div>
+
+    <div class="section-title">Қатемен жұмыс:</div>
+    <p class="note">
+        Төменде <strong>қате</strong> немесе жеткіліксіз болған сұрақтар көрсетілген.
+        Оқушы осы сұрақтар бойынша дәптерде қатемен жұмыс жасай алады.
+    </p>
+    <div id="error-review"></div>
+</div>
+
+<script>
+    // ===== УАҚЫТ БАПТАУ =====
+    const TEST_DURATION_MINUTES = 30;
+
+    // ===== ГЛОБАЛДЫ АЙНЫМАЛЫ =====
+    let remainingSeconds = TEST_DURATION_MINUTES * 60;
+    let timerInterval = null;
+    let testFinished = false;
+
+    let studentName = "";
+    let studentGrade = "";
+    let studentLetter = "";
+
+    let questionOrder = [];
+    let currentQuestionIndex = 0;
+    let userAnswers = {};
+
+    // ===== НҰСҚАУЛЫҚ КЕЛІСІМІНЕ БАЙЛАНЫСТЫ БАСТАУ БАТЫРМАСЫН БАСҚАРУ =====
+    window.addEventListener("DOMContentLoaded", function () {
+        const consent = document.getElementById("consent-checkbox");
+        const startBtn = document.getElementById("start-btn");
+        if (consent && startBtn) {
+            consent.addEventListener("change", function () {
+                startBtn.disabled = !consent.checked;
+            });
+        }
+
+        // Қауіпсіздік: көшіру, контекст-меню, кейбір пернелерді бұғаттау
+        document.addEventListener("copy", function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener("cut", function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener("keydown", function (e) {
+            const key = e.key.toLowerCase();
+
+            // Ctrl + C / Ctrl + U / Ctrl + S / Ctrl + P
+            if (e.ctrlKey && ["c", "u", "s", "p"].indexOf(key) !== -1) {
+                e.preventDefault();
+            }
+
+            // F12 (DevTools)
+            if (key === "f12") {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+I, Ctrl+Shift+J
+            if (e.ctrlKey && e.shiftKey && ["i", "j"].indexOf(key) !== -1) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // ===== СҰРАҚТАР ТІЗІМІ =====
+    const questions = [
+        {
+            id: "q1",
+            type: "mcq",
+            objective: "9.2.2.1",
+            text: "Инерция дегеніміз не?",
+            options: [
+                "Дененің пішіні мен көлемін өзгерту қасиеті",
+                "Денелердің өзара электрлік әсерлесу қасиеті",
+                "Дененің жылдамдығын сақтау немесе өзгерісіне қарсыласу қасиеті",
+                "Денеге әсер ететін күштің сандық сипаттамасы"
+            ],
+            correctIndex: 2
+        },
+        {
+            id: "q2",
+            type: "mcq",
+            objective: "9.2.2.1",
+            text: "Инерциялық санақ жүйесіне сәйкес келетінін таңдаңыз.",
+            options: [
+                "Үдеумен жоғары қозғалып келе жатқан лифт",
+                "Түзу сызық бойымен бірқалыпты қозғалып келе жатқан поезд",
+                "Қатты тежеу кезіндегі автомобиль",
+                "Шеңбер бойымен бірқалыпты қозғалып тұрған карусель"
+            ],
+            correctIndex: 1
+        },
+        {
+            id: "q3",
+            type: "mcq",
+            objective: "9.2.2.2",
+            text: "Ньютонның бірінші заңының дұрыс тұжырымдамасы:",
+            options: [
+                "Денеге әсер ететін күш дене массасы мен үдеудің көбейтіндісіне тең.",
+                "Әрекет күші мен қарсы әрекет күші сан жағынан тең, бағыты қарама-қарсы.",
+                "Денеге басқа денелер әсер етпесе немесе олардың әсері теңгерілсе, дене тыныштық күйін сақтайды немесе түзу сызықты бірқалыпты қозғалады.",
+                "Барлық денелер бір-бірін массаларына тура пропорционал күшпен тартады."
+            ],
+            correctIndex: 2
+        },
+        {
+            id: "q4",
+            type: "mcq",
+            objective: "9.2.2.2",
+            text: "Ньютонның екінші заңының математикалық өрнегін көрсетіңіз.",
+            options: [
+                "F = ma",
+                "F = mv",
+                "F = m / a",
+                "F = m g"
+            ],
+            correctIndex: 0
+        },
+        {
+            id: "q5",
+            type: "mcq",
+            objective: "9.2.2.5",
+            text: "Ньютонның үшінші заңының дұрыс тұжырымдамасы:",
+            options: [
+                "Әрбір әрекетке оған тең әрі қарама-қарсы бағытталған қарсы әрекет бар.",
+                "Дене тыныштықта болса, оған күш әсер етпейді.",
+                "Дененің инерциясы оның массасына тәуелсіз.",
+                "Қуат жұмыстың орындалу уақытына қатынасына тең."
+            ],
+            correctIndex: 0
+        },
+        {
+            id: "q6",
+            type: "mcq",
+            objective: "9.2.2.3",
+            text: "Ауырлық күші дегеніміз:",
+            options: [
+                "Деформацияланған дененің бастапқы қалпына келуге ұмтылуынан туатын күш",
+                "Жердің немесе басқа планетаның денеге тартылысынан туатын күш",
+                "Жанасу кезінде пайда болатын үйкеліс күші",
+                "Денелердің өзара электрлік әсерлесу күші"
+            ],
+            correctIndex: 1
+        },
+        {
+            id: "q7",
+            type: "mcq",
+            objective: "9.2.2.3",
+            text: "Серпімділік күшіне сәйкес келетін мысалды таңдаңыз.",
+            options: [
+                "Қолдан сырғып бара жатқан кітаптың баяулауы",
+                "Созылған серіппенің қысқаруға ұмтылуы",
+                "Ауыр жәшіктің еденге түсіретін қысымы",
+                "Жер серігін тартатын күш"
+            ],
+            correctIndex: 1
+        },
+        {
+            id: "q8",
+            type: "mcq",
+            objective: "9.2.2.3",
+            text: "Үйкеліс күшінің бағыты:",
+            options: [
+                "Әрқашан дененің қозғалыс бағытымен бағыттас",
+                "Әрқашан дененің қозғалысына немесе сырғанауына қарсы бағытталған",
+                "Әрқашан жоғары бағытталған",
+                "Әрқашан төмен бағытталған"
+            ],
+            correctIndex: 1
+        },
+        {
+            id: "q9",
+            type: "mcq",
+            objective: "9.2.2.11",
+            text: "Салмақсыздық күйінің дұрыс анықтамасы:",
+            options: [
+                "Дененің массасы нөлге тең күй",
+                "Денеге ауырлық күші әсер етпейтін күй",
+                "Дененің тірекке немесе аспаға түсіретін салмақ күші нөлге тең болатын күй",
+                "Тек Ай бетінде байқалатын құбылыс"
+            ],
+            correctIndex: 2
+        },
+        {
+            id: "q10",
+            type: "mcq",
+            objective: "9.2.2.10",
+            text: "Лифт жоғары үдеумен қозғалғанда адамның салмағы:",
+            options: [
+                "Өзгермейді",
+                "Артады",
+                "Азаяды",
+                "Нөлге тең болады"
+            ],
+            correctIndex: 1
+        },
+        {
+            id: "q11",
+            type: "mcq",
+            objective: "9.2.2.2",
+            text: "Массасы 2 кг денеге 10 Н қорытқы күш әсер етеді. Дененің үдеуі қандай?",
+            options: [
+                "2 м/с²",
+                "5 м/с²",
+                "10 м/с²",
+                "20 м/с²"
+            ],
+            correctIndex: 1
+        },
+        {
+            id: "q12",
+            type: "mcq",
+            objective: "9.2.2.6",
+            text: "Екі дененің массалары m₁ = 5 кг, m₂ = 10 кг, арақашықтығы r = 0,5 м. G = 6,67·10⁻¹¹ Н·м²/кг². Бүкіләлемдік тартылыс күшінің шамасын жуықтап таңдаңыз.",
+            options: [
+                "1,3·10⁻⁸ Н",
+                "1,3·10⁻⁹ Н",
+                "6,7·10⁻¹¹ Н",
+                "6,7·10⁻¹⁰ Н"
+            ],
+            correctIndex: 0
+        },
+        {
+            id: "q13",
+            type: "mcq",
+            objective: "9.2.2.10",
+            text: "Массасы 60 кг адамның Жер бетіндегі салмағын таңдаңыз (g ≈ 10 м/с²).",
+            options: [
+                "6 Н",
+                "60 Н",
+                "600 Н",
+                "6000 Н"
+            ],
+            correctIndex: 2
+        },
+        {
+            id: "q14",
+            type: "mcq",
+            objective: "9.2.2.2",
+            text: "Массасы 4 кг дене 3 м/с² үдеумен қозғалады. Қорытқы күш шамасын таңдаңыз.",
+            options: [
+                "7 Н",
+                "12 Н",
+                "1,33 Н",
+                "0,75 Н"
+            ],
+            correctIndex: 1
+        },
+        {
+            id: "q15",
+            type: "mcq",
+            objective: "9.2.2.6",
+            text: "Екі дененің арақашықтығын 2 есе арттырсақ, олардың тартылыс күші қалай өзгереді?",
+            options: [
+                "2 есе артады",
+                "2 есе кемиді",
+                "4 есе артады",
+                "4 есе кемиді"
+            ],
+            correctIndex: 3
+        },
+        {
+            id: "q16",
+            type: "mcq",
+            objective: "9.2.2.10",
+            text: "Массасы 50 кг адам лифтпен төмен үдеумен қозғалып келеді. Адамның салмағы 400 Н (g ≈ 10 м/с²). Лифттің үдеуінің модулін таңдаңыз.",
+            options: [
+                "0 м/с²",
+                "2 м/с²",
+                "4 м/с²",
+                "6 м/с²"
+            ],
+            correctIndex: 1
+        },
+        {
+            id: "qM1",
+            type: "match",
+            objective: "9.2.2.1, 9.2.2.2, 9.2.2.5",
+            text: "Ұғымдар мен анықтамаларды сәйкестендіріңіз. Әр жол үшін тиісті әріпті таңдаңыз.",
+            rows: [
+                { left: "Инерция", correct: "B" },
+                { left: "Ньютонның бірінші заңы", correct: "D" },
+                { left: "Ньютонның екінші заңы", correct: "C" },
+                { left: "Ньютонның үшінші заңы", correct: "A" }
+            ],
+            rightDefs: [
+                { code: "A", text: "Әрбір әрекетке оған тең әрі қарама-қарсы бағытталған қарсы әрекет бар." },
+                { code: "B", text: "Дененің жылдамдығын сақтау не өзгерісіне қарсыласу қасиеті." },
+                { code: "C", text: "Денеге әсер ететін қорытқы күш дене массасы мен үдеудің көбейтіндісіне тең." },
+                { code: "D", text: "Денеге басқа денелер әсер етпесе немесе әсері теңгерілсе, дене тыныштықта болады немесе түзу сызық бойымен бірқалыпты қозғалады." }
+            ]
+        },
+        {
+            id: "qO1",
+            type: "open",
+            objective: "9.2.2.1",
+            text: "Инерция және инерттілік ұғымдарын өз сөзіңізбен түсіндіріңіз. Күнделікті өмірден инерцияға кемінде екі мысал келтіріңіз.",
+            keywords: [
+                "инерция",
+                "инерттілік",
+                "қасиет",
+                "жылдамдық",
+                "қозғалыс",
+                "күйін сақтау",
+                "сақтау",
+                "өзгерісіне",
+                "қарсыласу",
+                "поезд",
+                "вагон",
+                "автобус",
+                "машина",
+                "көлік",
+                "тежеу",
+                "автомобиль"
+            ],
+            minKeywordCount: 3
+        },
+        {
+            id: "qO2",
+            type: "open",
+            objective: "9.2.2.6, 9.2.2.11",
+            text: "Бүкіләлемдік тартылыс заңын тұжырымдаңыз және салмақ пен салмақсыздық ұғымдарын салыстырыңыз. Жер орбитасындағы ғарышкер мысалында түсіндіріңіз.",
+            keywords: [
+                "бүкіләлемдік тартылыс",
+                "тартылыс заңы",
+                "масса",
+                "арақашықтық",
+                "тура пропорционал",
+                "кері пропорционал",
+                "квадратына",
+                "салмақ",
+                "ауырлық күші",
+                "салмақсыздық",
+                "тірек",
+                "аспа",
+                "жер орбитасы",
+                "орбита",
+                "ғарышкер",
+                "жер",
+                "ғарыш"
+            ],
+            minKeywordCount: 4
+        }
+    ];
+
+    // ===== КӨМЕКШІ ФУНКЦИЯЛАР =====
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    function startTest() {
+        const consent = document.getElementById("consent-checkbox");
+        if (!consent || !consent.checked) {
+            alert("Тестті бастау үшін нұсқаулықпен және академиялық адалдық ережелерімен келісуіңіз керек.");
+            return;
+        }
+
+        studentName = document.getElementById("student-name").value.trim();
+        studentGrade = document.getElementById("student-grade").value.trim();
+        studentLetter = document.getElementById("student-letter").value.trim();
+
+        if (!studentName || !studentGrade || !studentLetter) {
+            alert("Өтінемін, аты-жөні, сынып және литерін толық толтырыңыз.");
+            return;
+        }
+
+        document.getElementById("start-screen").classList.add("hidden");
+        document.getElementById("quiz-screen").classList.remove("hidden");
+
+        const info = "Оқушы: " + studentName + ", " + studentGrade + " «" + studentLetter + "» сыныбы";
+        document.getElementById("student-info").textContent = info;
+
+        questionOrder = [];
+        for (let i = 0; i < questions.length; i++) {
+            questionOrder.push(questions[i]);
+        }
+        shuffle(questionOrder);
+
+        currentQuestionIndex = 0;
+        userAnswers = {};
+        testFinished = false;
+
+        remainingSeconds = TEST_DURATION_MINUTES * 60;
+        updateTimerDisplay();
+        timerInterval = setInterval(tick, 1000);
+
+        showQuestion();
+    }
+
+    function tick() {
+        remainingSeconds = remainingSeconds - 1;
+        if (remainingSeconds < 0) {
+            remainingSeconds = 0;
+        }
+        updateTimerDisplay();
+
+        if (remainingSeconds <= 0) {
+            clearInterval(timerInterval);
+            alert("Уақыт аяқталды! Жауаптарыңыз автоматты түрде жіберіледі.");
+            finishTest(true);
+        }
+    }
+
+    function updateTimerDisplay() {
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = remainingSeconds % 60;
+        const mm = String(minutes).padStart(2, "0");
+        const ss = String(seconds).padStart(2, "0");
+        document.getElementById("time-remaining").textContent = mm + ":" + ss;
+    }
+
+    function showQuestion() {
+        const q = questionOrder[currentQuestionIndex];
+        const container = document.getElementById("question-container");
+
+        document.getElementById("question-counter").textContent =
+            "Сұрақ " + (currentQuestionIndex + 1) + " / " + questionOrder.length;
+
+        let html = '<div class="question-text"><strong>' + q.text + "</strong></div>";
+
+        if (q.type === "mcq") {
+            html += '<div class="options">';
+            for (let i = 0; i < q.options.length; i++) {
+                html +=
+                    "<label>" +
+                    '<input type="radio" name="answer_mcq" value="' + i + '">' +
+                    " " + String.fromCharCode(65 + i) + ") " + q.options[i] +
+                    "</label>";
+            }
+            html += "</div>";
+        } else if (q.type === "match") {
+            html += '<p class="note">Оң жақтағы анықтамаларға сәйкес келетін әріпті таңдаңыз.</p>';
+            html += '<table><tr><th>Ұғым</th><th>Жауап (әріп)</th></tr>';
+            for (let r = 0; r < q.rows.length; r++) {
+                html +=
+                    "<tr>" +
+                    "<td>" + q.rows[r].left + "</td>" +
+                    '<td><select id="match_row_' + r + '">' +
+                    '<option value="">–</option>';
+                for (let d = 0; d < q.rightDefs.length; d++) {
+                    html += '<option value="' + q.rightDefs[d].code + '">' + q.rightDefs[d].code + "</option>";
+                }
+                html += "</select></td></tr>";
+            }
+            html += "</table>";
+
+            html += "<p><strong>Анықтамалар:</strong></p><ul>";
+            for (let d = 0; d < q.rightDefs.length; d++) {
+                html += "<li><strong>" + q.rightDefs[d].code + "</strong> – " + q.rightDefs[d].text + "</li>";
+            }
+            html += "</ul>";
+        } else if (q.type === "open") {
+            html += '<p class="note">Жауабыңызды төмендегі өріске толық сөйлемдермен жазыңыз.</p>';
+            html += '<textarea id="open_answer" rows="5" style="width:100%;"></textarea>';
+        }
+
+        container.innerHTML = html;
+
+        const saved = userAnswers[q.id];
+        if (saved) {
+            if (q.type === "mcq" && saved.selectedIndex !== null && saved.selectedIndex !== undefined) {
+                const radios = document.getElementsByName("answer_mcq");
+                if (radios[saved.selectedIndex]) {
+                    radios[saved.selectedIndex].checked = true;
+                }
+            } else if (q.type === "match" && saved.rows) {
+                for (let r = 0; r < q.rows.length; r++) {
+                    const sel = document.getElementById("match_row_" + r);
+                    if (sel && saved.rows[r]) {
+                        sel.value = saved.rows[r];
+                    }
+                }
+            } else if (q.type === "open" && saved.text !== undefined) {
+                const ta = document.getElementById("open_answer");
+                if (ta) {
+                    ta.value = saved.text;
+                }
+            }
+        }
+
+        const nextBtn = document.getElementById("next-btn");
+        const finishBtn = document.getElementById("finish-btn");
+
+        if (currentQuestionIndex === questionOrder.length - 1) {
+            nextBtn.classList.add("hidden");
+            finishBtn.classList.remove("hidden");
+        } else {
+            nextBtn.classList.remove("hidden");
+            finishBtn.classList.add("hidden");
+        }
+    }
+
+    function saveCurrentAnswer() {
+        const q = questionOrder[currentQuestionIndex];
+        if (q.type === "mcq") {
+            const radios = document.getElementsByName("answer_mcq");
+            let selectedIndex = null;
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    selectedIndex = parseInt(radios[i].value, 10);
+                    break;
+                }
+            }
+            userAnswers[q.id] = { type: "mcq", selectedIndex: selectedIndex };
+        } else if (q.type === "match") {
+            const rowsAns = {};
+            for (let r = 0; r < q.rows.length; r++) {
+                const sel = document.getElementById("match_row_" + r);
+                rowsAns[r] = sel ? sel.value : "";
+            }
+            userAnswers[q.id] = { type: "match", rows: rowsAns };
+        } else if (q.type === "open") {
+            const ta = document.getElementById("open_answer");
+            const textVal = ta ? ta.value.trim() : "";
+            userAnswers[q.id] = { type: "open", text: textVal };
+        }
+    }
+
+    function nextQuestion() {
+        saveCurrentAnswer();
+        if (currentQuestionIndex < questionOrder.length - 1) {
+            currentQuestionIndex = currentQuestionIndex + 1;
+            showQuestion();
+        }
+    }
+
+    function finishTest(fromTimer) {
+        if (testFinished) {
+            return;
+        }
+        testFinished = true;
+
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+
+        saveCurrentAnswer();
+
+        let correctCount = 0;
+        let totalAuto = 0;
+        const autoResults = [];
+
+        for (let i = 0; i < questions.length; i++) {
+            const q = questions[i];
+            const ua = userAnswers[q.id];
+
+            if (q.type === "mcq") {
+                totalAuto = totalAuto + 1;
+                let selectedIndex = null;
+                if (ua && ua.selectedIndex !== null && ua.selectedIndex !== undefined) {
+                    selectedIndex = ua.selectedIndex;
+                }
+                const isCorrect = (selectedIndex === q.correctIndex);
+                if (isCorrect) {
+                    correctCount = correctCount + 1;
+                }
+                autoResults.push({
+                    type: "mcq",
+                    text: q.text,
+                    options: q.options,
+                    correctIndex: q.correctIndex,
+                    selectedIndex: selectedIndex,
+                    isCorrect: isCorrect
+                });
+            } else if (q.type === "match") {
+                totalAuto = totalAuto + 1;
+                let isCorrectMatch = true;
+                const userRows = (ua && ua.rows) ? ua.rows : {};
+                for (let r = 0; r < q.rows.length; r++) {
+                    const sel = userRows[r] ? userRows[r] : "";
+                    if (sel !== q.rows[r].correct) {
+                        isCorrectMatch = false;
+                    }
+                }
+                if (isCorrectMatch) {
+                    correctCount = correctCount + 1;
+                }
+                autoResults.push({
+                    type: "match",
+                    text: q.text,
+                    rows: q.rows,
+                    rightDefs: q.rightDefs,
+                    userRows: userRows,
+                    isCorrect: isCorrectMatch
+                });
+            } else if (q.type === "open") {
+                totalAuto = totalAuto + 1;
+                const userText = ua ? (ua.text || "") : "";
+                const lower = userText.toLowerCase();
+                const allKeywords = q.keywords || [];
+                const found = [];
+                for (let k = 0; k < allKeywords.length; k++) {
+                    const kw = allKeywords[k];
+                    if (lower.indexOf(kw.toLowerCase()) !== -1) {
+                        if (found.indexOf(kw) === -1) {
+                            found.push(kw);
+                        }
+                    }
+                }
+                const minNeed = q.minKeywordCount || 1;
+                const isCorrectOpen = (found.length >= minNeed && userText.trim().length > 0);
+                if (isCorrectOpen) {
+                    correctCount = correctCount + 1;
+                }
+                autoResults.push({
+                    type: "open",
+                    text: q.text,
+                    userText: userText,
+                    foundKeywords: found,
+                    totalKeywords: allKeywords.length,
+                    isCorrect: isCorrectOpen
+                });
+            }
+        }
+
+        const percent = totalAuto > 0 ? Math.round((correctCount / totalAuto) * 100) : 0;
+
+        document.getElementById("quiz-screen").classList.add("hidden");
+        document.getElementById("result-screen").classList.remove("hidden");
+
+        const summaryEl = document.getElementById("result-summary");
+        summaryEl.innerHTML =
+            "<strong>" + studentName + "</strong>, " + studentGrade + " «" + studentLetter + "» сыныбы<br>" +
+            "Автоматты бағаланған сұрақтар: " + correctCount + " / " + totalAuto + "<br>" +
+            "Пайыздық көрсеткіш: " + percent + " %<br>" +
+            '<span class="note">Ашық сұрақтар да кілттік сөздер арқылы автоматты тексерілді. Қажет болса, мұғалім қолмен түзете алады.</span>';
+
+        const detailsEl = document.getElementById("result-details");
+        let detailsHtml = "";
+
+        for (let i = 0; i < autoResults.length; i++) {
+            const res = autoResults[i];
+            const qNumber = i + 1;
+
+            if (res.type === "mcq") {
+                const studentText =
+                    (res.selectedIndex !== null && res.selectedIndex !== undefined)
+                        ? String.fromCharCode(65 + res.selectedIndex) + ") " + res.options[res.selectedIndex]
+                        : "Жауап берілмеген";
+                const correctText =
+                    String.fromCharCode(65 + res.correctIndex) + ") " + res.options[res.correctIndex];
+                detailsHtml +=
+                    '<div class="result-question">' +
+                    "<p><strong>" + qNumber + "-сұрақ (тест):</strong> " + res.text + "</p>" +
+                    "<p>Сіздің жауабыңыз: " + studentText + "</p>" +
+                    "<p>Дұрыс жауап: " + correctText + "</p>" +
+                    '<p>Нәтиже: <span class="' + (res.isCorrect ? "correct" : "incorrect") + '">' +
+                    (res.isCorrect ? "Дұрыс" : "Қате") +
+                    "</span></p></div>";
+            } else if (res.type === "match") {
+                let tableHtml =
+                    '<table><tr><th>Ұғым</th><th>Сіздің жауабыңыз</th><th>Дұрыс жауап</th></tr>';
+                for (let r = 0; r < res.rows.length; r++) {
+                    const row = res.rows[r];
+                    const userCode = res.userRows && res.userRows[r] ? res.userRows[r] : "";
+                    tableHtml +=
+                        "<tr><td>" + row.left + "</td><td>" + (userCode || "–") + "</td><td>" + row.correct + "</td></tr>";
+                }
+                tableHtml += "</table>";
+
+                detailsHtml +=
+                    '<div class="result-question">' +
+                    "<p><strong>" + qNumber + "-сұрақ (сәйкестендіру):</strong> " + res.text + "</p>" +
+                    tableHtml +
+                    '<p>Нәтиже: <span class="' + (res.isCorrect ? "correct" : "incorrect") + '">' +
+                    (res.isCorrect ? "Дұрыс (барлығы дұрыс сәйкестендірілген)" : "Қате (кем дегенде бір сәйкестендіру қате)") +
+                    "</span></p></div>";
+            } else if (res.type === "open") {
+                const userTextHtml = res.userText
+                    ? res.userText.replace(/\n/g, "<br>")
+                    : "<span class='note'>Жауап берілмеген.</span>";
+                const kwInfo = res.foundKeywords.length
+                    ? res.foundKeywords.join(", ")
+                    : "<span class='note'>Табылған жоқ.</span>";
+                detailsHtml +=
+                    '<div class="result-question">' +
+                    "<p><strong>" + qNumber + "-сұрақ (ашық):</strong> " + res.text + "</p>" +
+                    "<p><em>Сіздің жауабыңыз:</em></p><p>" + userTextHtml + "</p>" +
+                    "<p>Табылған кілттік сөздер (" + res.foundKeywords.length + "/" + res.totalKeywords + "): " + kwInfo + "</p>" +
+                    '<p>Нәтиже: <span class="' + (res.isCorrect ? "correct" : "incorrect") + '">' +
+                    (res.isCorrect ? "Кілттік сөздер бойынша жеткілікті" : "Кілттік сөздер жеткіліксіз") +
+                    "</span></p>" +
+                    "<p class='note'>Кілттік сөздер тізімін мұғалім қажетіне қарай кеңейте немесе өзгерте алады.</p>" +
+                    "</div>";
+            }
+        }
+
+        detailsEl.innerHTML = detailsHtml;
+
+        const errorEl = document.getElementById("error-review");
+        let errorHtml = "";
+
+        for (let i = 0; i < autoResults.length; i++) {
+            const res = autoResults[i];
+            if (res.isCorrect) {
+                continue;
+            }
+
+            if (res.type === "mcq") {
+                const studentText =
+                    (res.selectedIndex !== null && res.selectedIndex !== undefined)
+                        ? String.fromCharCode(65 + res.selectedIndex) + ") " + res.options[res.selectedIndex]
+                        : "Жауап берілмеген";
+                const correctText =
+                    String.fromCharCode(65 + res.correctIndex) + ") " + res.options[res.correctIndex];
+                errorHtml +=
+                    '<div class="result-question">' +
+                    "<p><strong>" + res.text + "</strong></p>" +
+                    "<p>Сіздің жауабыңыз: " + studentText + "</p>" +
+                    "<p>Дұрыс жауап: " + correctText + "</p>" +
+                    "</div>";
+            } else if (res.type === "match") {
+                let tableHtml2 =
+                    '<table><tr><th>Ұғым</th><th>Сіздің жауабыңыз</th><th>Дұрыс жауап</th></tr>';
+                for (let r = 0; r < res.rows.length; r++) {
+                    const row2 = res.rows[r];
+                    const userCode2 = res.userRows && res.userRows[r] ? res.userRows[r] : "";
+                    tableHtml2 +=
+                        "<tr><td>" + row2.left + "</td><td>" + (userCode2 || "–") + "</td><td>" + row2.correct + "</td></tr>";
+                }
+                tableHtml2 += "</table>";
+                errorHtml +=
+                    '<div class="result-question">' +
+                    "<p><strong>" + res.text + "</strong></p>" +
+                    tableHtml2 +
+                    "</div>";
+            } else if (res.type === "open") {
+                const userTextHtml2 = res.userText
+                    ? res.userText.replace(/\n/g, "<br>")
+                    : "<span class='note'>Жауап берілмеген.</span>";
+                errorHtml +=
+                    '<div class="result-question">' +
+                    "<p><strong>" + res.text + "</strong></p>" +
+                    "<p><em>Сіздің жауабыңыз:</em></p><p>" + userTextHtml2 + "</p>" +
+                    "<p class='note'>Кілттік сөздер жеткіліксіз. Жауапты толықтыру ұсынылады.</p>" +
+                    "</div>";
+            }
+        }
+
+        if (!errorHtml) {
+            errorHtml = "<p>Барлық сұрақтар бойынша автоматты тексеру нәтижесі – қате табылмады. Қатемен жұмыс қажет емес.</p>";
+        }
+        errorEl.innerHTML = errorHtml;
+    }
+</script>
+
+</body>
+</html>
